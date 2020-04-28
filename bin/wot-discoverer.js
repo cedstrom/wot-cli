@@ -30,6 +30,11 @@ var getSSDPPeer = function (callback) {
             var td = headers['TD.WOT.W3C.ORG'];
             if(headers.ST == WOT_SSDP_TYPE && td){
                 console.log(timeString(),"<<< Thing with TD <"+td+"> found ("+address.address+")");
+            } else {
+                console.log(timeString(),"<<< Queried thing found ("+address.address+")");
+                for (let k in headers) {
+                    console.log('\t', k + ':' + headers[k]);
+                }
             }
         }).on("close", function () {
             console.log(timeString(),"*** wot ssdp discoverer stopped");
@@ -40,10 +45,15 @@ var getSSDPPeer = function (callback) {
     }
 };
 
-var discoverSSDP = function () {
+var discoverSSDP = function (query) {
+    if(undefined == query) {
+        qs = WOT_SSDP_TYPE;
+    } else {
+        qs = query;
+    }
     getSSDPPeer(function (ssdpPeer) {
         ssdpPeer.search({
-            ST: WOT_SSDP_TYPE
+            ST: qs
         });
     });
 };

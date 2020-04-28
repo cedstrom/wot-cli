@@ -16,7 +16,7 @@ program
 program
     .command('search [query]')
     .alias('discover')
-    .description('search for thing descriptions. [query] is not used yet is reserved for future use')
+    .description('search for thing descriptions.\n\t[query] (optional) will specify what service to search for.\n\t\tDefaults to other WOT instances.')
     .option("-p, --protocol [protocol]", "discovery protocol. value: ssdp or mdns", /^(mdns|ssdp)$/i,"ssdp")
     .action(function(query, options){
         console.log("start discovery over",options.protocol);
