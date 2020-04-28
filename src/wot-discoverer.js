@@ -13,6 +13,8 @@ const mdns = require('mdns');
 const mdnsBrowser = mdns.browseThemAll();
 const mdnsServiceMap = new Map()
 
+const ServiceInfo = require('./ServiceInfo')
+
 var timeString = function(){
     return new Date().toTimeString().split(" ")[0];
 };
@@ -75,23 +77,17 @@ var discoverMDNS = function (query) {
             mdnsServiceMap.set(service.type.toString(), typeBrowser);
             typeBrowser.on('serviceUp', service => {
                 //console.log("service up: ", service);
+                const serviceInfo = new ServiceInfo(service.name, service.type.toString());
                 console.log(timeString(), "<<< mDNS service found");
-                console.log(timeString(), "shortname: ", service.name);
-                console.log(timeString(), "fullname: ", service.fullname);
-                console.log(timeString(), "host: " + service.host);
-                console.log(timeString(), "if: " + service.networkInterface);
-                console.log(timeString(), "serviceType: " + service.type.toString());
-                service.addresses.forEach(address => {
-                    console.log(timeString(), "address: ", address);
-                })
-                console.log(timeString(), "port: " + service.port);
-
+                serviceInfo.appendKey("fullname", service.fullname);
+                serviceInfo.appendKey("host", service.host);
+                serviceInfo.appendKey("if", service.networkInterface);
+                serviceInfo.appendKey("address", service.addresses);
+                serviceInfo.appendKey("port", service.port);
                 if(service.txtRecord != undefined) {
-                    console.log(timeString(), "txtRecord");
-                    for(let k in service.txtRecord) {
-                        console.log("\t", k + ": " + service.txtRecord[k]);
-                    }
+                    serviceInfo.appendKey("txt", service.txtRecord);
                 }
+                console.log(serviceInfo.prettyPrintString());
             });
             typeBrowser.start();
         }

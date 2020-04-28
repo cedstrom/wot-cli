@@ -1,28 +1,33 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Compile",
-            "type": "shell",
-            "command": "npm",
-            "args": ["run", "build"],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "options": {"cwd": "${workspaceFolder}"},
-            "dependsOn":["Flow Check"]
-        },
-        {
-            "label": "Flow Check",
-            "type": "shell",
-            "command": "npm",
-            "args": ["run", "flow"],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "options": {"cwd": "${workspaceFolder}"}
-        }
-    ]
-}   
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Compile",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "build"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": { "cwd": "${workspaceFolder}" },
+      "dependsOn": ["Flow Check"]
+    },
+    {
+      "label": "Flow Check",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "flow"],
+      "group": "build",
+      "options": { "cwd": "${workspaceFolder}" }
+    },
+    {
+      "label": "Clean",
+      "type": "shell",
+      "command": "rm",
+      "args": ["-fr", "lib"],
+      "group": "build",
+      "options": { "cwd": "${workspaceFolder}" }
+    }
+  ]
+}
