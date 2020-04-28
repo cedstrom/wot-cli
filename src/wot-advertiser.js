@@ -1,13 +1,16 @@
+// @flow
+"use strict";
+
 /**
  * Created by lba on 07/04/16.
  */
 var os = require('os');
-var package = require('../package.json');
+var pkginfo = require('../package.json');
 var ssdp = require("peer-ssdp");
-var SERVER = os.type() + "/" + os.release() + " UPnP/1.1 wot-cli/"+package.version;
+var SERVER = os.type() + "/" + os.release() + " UPnP/1.1 wot-cli/"+pkginfo.version;
 var WOT_SSDP_TYPE = "urn:w3c-org:device:Thing:1";
 var WOT_MDNS_TYPE = "_wot._tcp";
-var ssdpPeer = null;
+var ssdpPeer : ssdp.Peer = null;
 
 var timeString = function(){
     return new Date().toTimeString().split(" ")[0];
@@ -23,8 +26,8 @@ var generateRandomUUID = function() {
     return uuid;
 };
 
-var getSSDPPeer = function (urls, callback) {
-    if(ssdpPeer == null){
+var getSSDPPeer = function (urls: Array<string>, callback: (ssdp.Peer) => void) {
+    if(ssdpPeer == null) {
         ssdpPeer = ssdp.createPeer();
         ssdpPeer.on("ready", function () {
             console.log(timeString(),"*** wot ssdp advertiser is ready");
@@ -37,8 +40,7 @@ var getSSDPPeer = function (urls, callback) {
             var timeout = parseInt((parseInt(headers.MX) || 0)*800*Math.random());
             console.log(timeString(),">>> receive request from a wot client",address.address);
             setTimeout(function(){
-                for(var i in urls){
-                    var url = urls[i];
+                urls.forEach(url => {
                     var uuid = generateRandomUUID();
                     var headers = {
                         LOCATION: "",
@@ -49,7 +51,7 @@ var getSSDPPeer = function (urls, callback) {
                     };
                     console.log(timeString(),"<<< send TD <"+url+"> to wot client", address.address);
                     ssdpPeer.reply(headers, address);
-                }
+                });
             },timeout);
         }).on("close", function () {
             console.log(timeString(),"*** wot ssdp advertiser stopped");
@@ -60,10 +62,9 @@ var getSSDPPeer = function (urls, callback) {
     }
 };
 
-var advertiseSSDP = function (urls) {
+var advertiseSSDP = function (urls: Array<string>) {
     getSSDPPeer(urls,function (ssdpPeer) {
-        for(var i in urls){
-            var url = urls[i];
+        urls.forEach(url => {
             var uuid = generateRandomUUID();
             ssdpPeer.alive({
                 NT: WOT_SSDP_TYPE,
@@ -72,7 +73,7 @@ var advertiseSSDP = function (urls) {
                 SERVER: SERVER,
                 "TD.WOT.W3C.ORG": url
             });
-        }
+        });
     });
 };
 
@@ -80,7 +81,7 @@ var advertiseMDNS = function (urls) {
     console.log(timeString(),"*** mdns advertising is not supported yet. please use ssdp instead.");
 };
 
-var startAdvertising = function(protocols,urls){
+var startAdvertising = function(protocols: Array<string>, urls: Array<string>){
     if(protocols.indexOf("ssdp") != -1){
         advertiseSSDP(urls);
     }
@@ -89,10 +90,9 @@ var startAdvertising = function(protocols,urls){
     }
 };
 
-var stopAdvertising = function (urls, timeout, callback) {
+var stopAdvertising = function (urls: Array<string>, timeout: number, callback: () => void) {
     if(ssdpPeer != null){
-        for(var i in urls){
-            var url = urls[i];
+        urls.forEach(url => {
             var uuid = generateRandomUUID();
             ssdpPeer.byebye({
                 NT: WOT_SSDP_TYPE,
@@ -101,7 +101,7 @@ var stopAdvertising = function (urls, timeout, callback) {
                 SERVER: SERVER,
                 "TD.WOT.W3C.ORG": url
             });
-        }
+        });
         setTimeout(function () {
             ssdpPeer.close();
         },timeout);

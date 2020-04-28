@@ -1,8 +1,11 @@
+// @flow
+"use strict";
+
 /**
  * Created by lba on 07/04/16.
  */
 var program = require('commander');
-var package = require('../package.json');
+var pkginfo = require('../package.json');
 var advertiser = require("./wot-advertiser");
 var discoverer = require("./wot-discoverer");
 
@@ -11,7 +14,7 @@ function list(val) {
 };
 
 program
-    .version(package.version)
+    .version(pkginfo.version)
     .allowUnknownOption(false);
 
 program

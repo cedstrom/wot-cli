@@ -1,10 +1,13 @@
 {
   "name": "wot-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A command-line tool for the Web of Things",
   "main": "index.js",
   "scripts": {
-    "wot": "./bin/wot.js"
+    "wot": "node ./src/wot.js",
+    "build": "babel src/ -d lib/",
+    "prepublish": "npm run build",
+    "flow": "./node_modules/.bin/flow"
   },
   "bin": {
     "wot": "./index.js"
@@ -26,5 +29,11 @@
     "commander": "^2.9.0",
     "peer-ssdp": "^0.0.5",
     "mdns": "^2.5.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-flow": "^7.9.0",
+    "flow-bin": "^0.123.0"
   }
 }

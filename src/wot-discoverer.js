@@ -1,9 +1,13 @@
+// @flow
+"use strict";
+
+
 /**
  * Created by lba on 07/04/16.
  */
 var ssdp = require("peer-ssdp");
 var WOT_SSDP_TYPE = "urn:w3c-org:device:Thing:1";
-var ssdpPeer = null;
+var ssdpPeer = ssdp.createPeer();
 
 const mdns = require('mdns');
 const mdnsBrowser = mdns.browseThemAll();
@@ -15,7 +19,6 @@ var timeString = function(){
 
 var getSSDPPeer = function (callback) {
     if(ssdpPeer == null){
-        ssdpPeer = ssdp.createPeer();
         ssdpPeer.on("ready", function () {
             console.log(timeString(),"*** wot ssdp discoverer is ready");
             callback && callback(ssdpPeer);
@@ -49,9 +52,8 @@ var getSSDPPeer = function (callback) {
 };
 
 var discoverSSDP = function (query) {
-    if(undefined == query) {
-        qs = WOT_SSDP_TYPE;
-    } else {
+    let qs = WOT_SSDP_TYPE
+    if(undefined != query) {
         qs = query;
     }
     getSSDPPeer(function (ssdpPeer) {
@@ -69,7 +71,7 @@ var discoverMDNS = function (query) {
             }
         }
         if(mdnsServiceMap.get() == undefined) {
-            typeBrowser = mdns.createBrowser(service.type);
+            const typeBrowser = mdns.createBrowser(service.type);
             mdnsServiceMap.set(service.type.toString(), typeBrowser);
             typeBrowser.on('serviceUp', service => {
                 //console.log("service up: ", service);
@@ -101,7 +103,7 @@ var discoverMDNS = function (query) {
     mdnsBrowser.start();
 };
 
-var startDiscovery = function(protocols,query){
+var startDiscovery = function(protocols: Array<string>, query: string){
     if(protocols.indexOf("ssdp") != -1){
         discoverSSDP(query);
     }
@@ -110,7 +112,7 @@ var startDiscovery = function(protocols,query){
     }
 };
 
-var stopDiscovery = function (callback) {
+var stopDiscovery = function (callback: () => void) {
     if(ssdpPeer != null){
         ssdpPeer.on("close", function () {
             callback && callback();

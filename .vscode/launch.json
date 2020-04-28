@@ -1,0 +1,53 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Belkin SSDP",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/index.js",
+            "args": ["search", "urn:Belkin:device:NetCamSensor:1"],
+            "preLaunchTask": "Compile"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Generic mDNS",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/index.js",
+            "args": ["search", "-p", "mdns"],
+            "preLaunchTask": "Compile"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch SSH mDNS",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/index.js",
+            "args": ["search", "-p", "mdns", "_ssh._tcp"],
+            "preLaunchTask": "Compile"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Advertise SSDPs",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/index.js",
+            "args": ["advertise", "test1", "test2", "test3"],
+            "preLaunchTask": "Compile"
+        }
+    ]
+}
