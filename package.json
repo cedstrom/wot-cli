@@ -24,6 +24,7 @@
   "license": "LGPL-3.0",
   "dependencies": {
     "commander": "^2.9.0",
-    "peer-ssdp": "^0.0.5"
+    "peer-ssdp": "^0.0.5",
+    "mdns": "^2.5.1"
   }
 }

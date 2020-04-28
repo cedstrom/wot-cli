@@ -3,8 +3,11 @@
  */
 var ssdp = require("peer-ssdp");
 var WOT_SSDP_TYPE = "urn:w3c-org:device:Thing:1";
-var WOT_MDNS_TYPE = "_wot._tcp";
 var ssdpPeer = null;
+
+const mdns = require('mdns');
+const mdnsBrowser = mdns.browseThemAll();
+const mdnsServiceMap = new Map()
 
 var timeString = function(){
     return new Date().toTimeString().split(" ")[0];
@@ -58,8 +61,44 @@ var discoverSSDP = function (query) {
     });
 };
 
-var discoverMDNS = function (urls) {
-    console.log(timeString(),"*** mdns discovery is not supported yet. please use ssdp instead.");
+var discoverMDNS = function (query) {
+    mdnsBrowser.on('serviceUp', service => {
+        if(query != undefined) {
+            if(query != service.type.toString()) {
+                return;
+            }
+        }
+        if(mdnsServiceMap.get() == undefined) {
+            typeBrowser = mdns.createBrowser(service.type);
+            mdnsServiceMap.set(service.type.toString(), typeBrowser);
+            typeBrowser.on('serviceUp', service => {
+                //console.log("service up: ", service);
+                console.log(timeString(), "<<< mDNS service found");
+                console.log(timeString(), "shortname: ", service.name);
+                console.log(timeString(), "fullname: ", service.fullname);
+                console.log(timeString(), "host: " + service.host);
+                console.log(timeString(), "if: " + service.networkInterface);
+                console.log(timeString(), "serviceType: " + service.type.toString());
+                service.addresses.forEach(address => {
+                    console.log(timeString(), "address: ", address);
+                })
+                console.log(timeString(), "port: " + service.port);
+
+                if(service.txtRecord != undefined) {
+                    console.log(timeString(), "txtRecord");
+                    for(let k in service.txtRecord) {
+                        console.log("\t", k + ": " + service.txtRecord[k]);
+                    }
+                }
+            });
+            typeBrowser.start();
+        }
+    });
+    mdnsBrowser.on('serviceDown', service => {
+        console.log("service down: ", service);
+        console.log("\t", service.type.toString());
+    });
+    mdnsBrowser.start();
 };
 
 var startDiscovery = function(protocols,query){
@@ -76,6 +115,14 @@ var stopDiscovery = function (callback) {
         ssdpPeer.on("close", function () {
             callback && callback();
         }).close();
+    }
+
+    mdnsBrowser.stop();
+    mdnsServiceMap.forEach((v, _) => {
+        v.stop();
+    });
+    if (callback) {
+        callback();
     }
 };
 

@@ -5,6 +5,7 @@ var program = require('commander');
 var package = require('../package.json');
 var advertiser = require("./wot-advertiser");
 var discoverer = require("./wot-discoverer");
+
 function list(val) {
     return val.split(',');
 };
