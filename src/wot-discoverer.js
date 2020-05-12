@@ -1,7 +1,6 @@
 // @flow
 "use strict";
 
-
 /**
  * Created by lba on 07/04/16.
  */
@@ -53,12 +52,12 @@ var getSSDPPeer = function (callback) {
     }
 };
 
-var discoverSSDP = function (query) {
-    let qs = WOT_SSDP_TYPE
+var discoverSSDP = function (query: string) {
+    let qs = WOT_SSDP_TYPE;
     if(undefined != query) {
         qs = query;
     }
-    getSSDPPeer(function (ssdpPeer) {
+    getSSDPPeer(function (ssdpPeer: ssdp.Peer) {
         ssdpPeer.search({
             ST: qs
         });
